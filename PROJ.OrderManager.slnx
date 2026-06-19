@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/00.Repository/" />
+  <Folder Name="/00.Repository/00.OrderManager/">
+    <Project Path="Library/Library.csproj" />
+  </Folder>
+  <Folder Name="/01.BackEnd/">
+    <Project Path="OrderManager.Api/OrderManager.Api.csproj" />
+    <Project Path="OrderManager.Infrastructure/OrderManager.Infrastructure.csproj" />
+  </Folder>
+</Solution>
