@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Library\Library.csproj" />
+    <ProjectReference Include="..\..\00.Repository\00.OrderManager\Library\Library.csproj" />
     <ProjectReference Include="..\OrderManager.Infrastructure\OrderManager.Infrastructure.csproj" />
   </ItemGroup>
 
