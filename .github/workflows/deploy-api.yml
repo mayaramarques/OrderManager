@@ -1,0 +1,40 @@
+name: Deploy API
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '01.BackEnd/**'
+      - '00.Repository/**'
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: '10.0.x'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore
+        run: dotnet restore 01.BackEnd/OrderManager.Api/OrderManager.Api.csproj
+
+      - name: Build
+        run: dotnet build 01.BackEnd/OrderManager.Api/OrderManager.Api.csproj --configuration Release --no-restore
+
+      - name: Publish
+        run: dotnet publish 01.BackEnd/OrderManager.Api/OrderManager.Api.csproj --configuration Release --output ./publish
+
+      # Descomente e configure o secret AZURE_WEBAPP_PUBLISH_PROFILE após criar o App Service
+      # - name: Deploy to Azure Web App
+      #   uses: azure/webapps-deploy@v3
+      #   with:
+      #     app-name: YOUR-APP-SERVICE-NAME
+      #     publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+      #     package: ./publish

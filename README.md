@@ -64,9 +64,14 @@ dotnet run
 
 ### Front-end
 
-Abra `02.FrontEnd/OrderManager.Web/Web/index.html` com **Live Server** (VS Code) na porta 5500.
+Abra a pasta `02.FrontEnd/OrderManager.Web/Web/` com **Live Server** (VS Code) na porta 5500.
 
-Configure a URL da API em `Scripts/orderManager.config.js`.
+- **Home (`index.html`):** navegar restaurantes, montar carrinho e finalizar pedido
+- **Gestão (`pedidos.html`):** resumo, filtros e avanço de status
+
+Configure a URL da API em `Scripts/orderManager.config.js` (dev: `http://localhost:5054`).
+
+A API deve estar rodando com CORS habilitado para `http://localhost:5500`.
 
 ## Endpoints
 
@@ -137,8 +142,15 @@ Configure a URL da API em `Scripts/orderManager.config.js`.
 
 | Etapa | Ação |
 |-------|------|
-| Azure SQL | Criar banco, configurar connection string em App Service |
-| Migrations | `dotnet ef database update` apontando para Azure SQL |
-| App Service | Publicar API .NET 10, variável `ConnectionStrings__DefaultConnection` |
-| Front estático | Static Web Apps ou Blob; ajustar `API_BASE_URL` no config JS |
-| Function | Timer diário para resumo de pedidos (ver `OrderManager.Functions`) |
+| **Azure SQL** | Criar banco; configurar connection string em `appsettings.Production.json` ou variável `ConnectionStrings__DefaultConnection` |
+| **Migrations** | `dotnet ef database update --project 01.BackEnd/OrderManager.Infrastructure --startup-project 01.BackEnd/OrderManager.Api` |
+| **App Service** | Publicar API .NET 10; workflow em `.github/workflows/deploy-api.yml` (secret `AZURE_WEBAPP_PUBLISH_PROFILE`) |
+| **Front estático** | Static Web Apps ou Blob; ajustar `API_BASE_URL` em `orderManager.config.js` |
+| **Function** | Publicar `OrderManager.Functions` (.NET 8); configurar connection string e validar Timer Trigger |
+
+### User Secrets (dev)
+
+```bash
+cd 01.BackEnd/OrderManager.Api
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "SUA-CONNECTION-STRING"
+```
