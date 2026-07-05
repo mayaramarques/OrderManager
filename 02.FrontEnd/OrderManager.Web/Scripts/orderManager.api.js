@@ -62,6 +62,31 @@ OrderManager.Api = (function () {
         return request('/api/orders/summary?groupBy=' + (groupBy || 'status'));
     }
 
+    function createCustomer(data) {
+        return request('/api/customers', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+    }
+
+    // ViaCEP — API pública brasileira de consulta de CEP
+    async function lookupCep(cep) {
+        var digits = cep.replace(/\D/g, '');
+        if (digits.length !== 8) {
+            throw new Error('CEP deve ter 8 dígitos.');
+        }
+        var response = await fetch('https://viacep.com.br/ws/' + digits + '/json/');
+        if (!response.ok) {
+            throw new Error('Não foi possível consultar o CEP.');
+        }
+        var data = await response.json();
+        if (data.erro) {
+            throw new Error('CEP não encontrado.');
+        }
+        return data;
+    }
+
     return {
         getCustomers: getCustomers,
         getRestaurants: getRestaurants,
@@ -69,6 +94,8 @@ OrderManager.Api = (function () {
         getOrders: getOrders,
         getOrder: getOrder,
         createOrder: createOrder,
+        createCustomer: createCustomer,
+        lookupCep: lookupCep,
         advanceStatus: advanceStatus,
         getSummary: getSummary
     };

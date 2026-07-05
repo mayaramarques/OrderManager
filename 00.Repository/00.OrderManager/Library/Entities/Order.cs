@@ -9,6 +9,9 @@ namespace Library.Entities
         public OrderStatusEnum Status { get; set; }
         public decimal Total { get; set; }
 
+        // Observações do cliente (alergias, ingredientes a evitar, etc.)
+        public string? Notes { get; set; }
+
         // Pedido pertence a um cliente e a um restaurante
         public int CustomerId { get; set; }
         public Customer? Customer { get; set; }

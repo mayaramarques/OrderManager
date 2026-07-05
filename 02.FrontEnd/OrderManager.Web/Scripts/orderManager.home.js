@@ -7,12 +7,12 @@ OrderManager.Home = (function () {
     var activeCategory = null;
 
     var CATEGORIES = [
-        { label: 'Lanches', keyword: 'burger', icon: '🍔', color: 'chip-yellow' },
-        { label: 'Pizza', keyword: 'pizza', icon: '🍕', color: 'chip-pink' },
-        { label: 'Japonesa', keyword: 'sushi', icon: '🍣', color: 'chip-green' },
-        { label: 'Saladas', keyword: 'salada', icon: '🥗', color: 'chip-orange' },
-        { label: 'Bebidas', keyword: 'bebida', icon: '🥤', color: 'chip-blue' },
-        { label: 'Sobremesas', keyword: 'doce', icon: '🍰', color: 'chip-purple' }
+        { label: 'Lanches', keywords: ['burger', 'lanche', 'batata', 'frita'], icon: '🍔', color: 'chip-yellow' },
+        { label: 'Pizza', keywords: ['pizza'], icon: '🍕', color: 'chip-pink' },
+        { label: 'Japonesa', keywords: ['sushi', 'sashimi', 'roll', 'temaki'], icon: '🍣', color: 'chip-green' },
+        { label: 'Saladas', keywords: ['salada'], icon: '🥗', color: 'chip-orange' },
+        { label: 'Bebidas', keywords: ['bebida', 'refrigerante', 'suco', 'água', 'agua', 'chá', 'cha', 'coca'], icon: '🥤', color: 'chip-blue' },
+        { label: 'Sobremesas', keywords: ['doce', 'sobremesa', 'brownie'], icon: '🍰', color: 'chip-purple' }
     ];
 
     function init() {
@@ -38,9 +38,25 @@ OrderManager.Home = (function () {
         document.getElementById('featuredRestaurants').addEventListener('click', function () {
             document.getElementById('restaurantsSection').scrollIntoView({ behavior: 'smooth' });
         });
-        document.getElementById('searchInput').addEventListener('input', OrderManager.App.debounce(function (e) {
-            filterBySearch(e.target.value);
+        document.getElementById('searchInput').addEventListener('input', OrderManager.App.debounce(function () {
+            renderMenu();
         }, 300));
+    }
+
+    function getRestaurantProducts() {
+        return allProducts.filter(function (p) { return p.restaurantId === selectedRestaurantId; });
+    }
+
+    function productMatchesCategory(product, category) {
+        var name = product.name.toLowerCase();
+        return category.keywords.some(function (kw) { return name.indexOf(kw) !== -1; });
+    }
+
+    function getAvailableCategories() {
+        var products = getRestaurantProducts();
+        return CATEGORIES.filter(function (cat) {
+            return products.some(function (p) { return productMatchesCategory(p, cat); });
+        });
     }
 
     async function loadData() {
@@ -49,7 +65,6 @@ OrderManager.Home = (function () {
             restaurants = await OrderManager.Api.getRestaurants();
             allProducts = await OrderManager.Api.getProducts();
             renderRestaurants();
-            renderCategories();
             if (restaurants.length > 0) selectRestaurant(restaurants[0].id);
         } catch (err) {
             OrderManager.App.showToast(err.message, 'error');
@@ -81,43 +96,55 @@ OrderManager.Home = (function () {
     }
 
     function renderCategories() {
+        var available = getAvailableCategories();
+        var section = document.getElementById('categoriesSection');
         var grid = document.getElementById('categoryGrid');
-        grid.innerHTML = CATEGORIES.map(function (cat, i) {
-            return '<div class="category-chip' + (activeCategory === cat.keyword ? ' active' : '') + '" data-keyword="' + cat.keyword + '">' +
+
+        section.classList.toggle('hidden', available.length === 0);
+
+        if (activeCategory && !available.some(function (c) { return c.label === activeCategory; })) {
+            activeCategory = null;
+        }
+
+        grid.innerHTML = available.map(function (cat) {
+            return '<div class="category-chip' + (activeCategory === cat.label ? ' active' : '') + '" data-label="' + cat.label + '">' +
                 '<div class="chip-bg ' + cat.color + '">' + cat.icon + '</div>' +
                 '<div class="chip-label">' + cat.label + '</div></div>';
         }).join('');
 
         grid.querySelectorAll('.category-chip').forEach(function (chip) {
             chip.addEventListener('click', function () {
-                var kw = chip.dataset.keyword;
-                activeCategory = activeCategory === kw ? null : kw;
+                var label = chip.dataset.label;
+                activeCategory = activeCategory === label ? null : label;
                 renderCategories();
                 renderMenu();
             });
         });
     }
 
-    async function selectRestaurant(id) {
+    function selectRestaurant(id) {
         selectedRestaurantId = id;
+        activeCategory = null;
         renderRestaurants();
         document.getElementById('menuPanel').classList.remove('hidden');
         var restaurant = restaurants.find(function (r) { return r.id === id; });
         document.getElementById('menuTitle').textContent = restaurant ? restaurant.name : 'Cardápio';
+        renderCategories();
         renderMenu();
     }
 
     function renderMenu() {
         var container = document.getElementById('menuProducts');
-        var products = allProducts.filter(function (p) { return p.restaurantId === selectedRestaurantId; });
+        var products = getRestaurantProducts();
 
         if (activeCategory) {
-            products = products.filter(function (p) {
-                return p.name.toLowerCase().indexOf(activeCategory) !== -1;
-            });
+            var category = CATEGORIES.find(function (c) { return c.label === activeCategory; });
+            if (category) {
+                products = products.filter(function (p) { return productMatchesCategory(p, category); });
+            }
         }
 
-        var search = document.getElementById('searchInput').value.toLowerCase();
+        var search = document.getElementById('searchInput').value.toLowerCase().trim();
         if (search) {
             products = products.filter(function (p) {
                 return p.name.toLowerCase().indexOf(search) !== -1;
@@ -145,10 +172,6 @@ OrderManager.Home = (function () {
                 }
             });
         });
-    }
-
-    function filterBySearch() {
-        renderMenu();
     }
 
     function updateCartDisplay() {
@@ -203,12 +226,15 @@ OrderManager.Home = (function () {
         btn.textContent = 'Enviando...';
 
         try {
+            var notes = document.getElementById('checkoutNotes').value.trim();
             var order = await OrderManager.Api.createOrder({
                 customerId: customerId,
                 restaurantId: OrderManager.Cart.getRestaurantId(),
-                items: OrderManager.Cart.toOrderItems()
+                items: OrderManager.Cart.toOrderItems(),
+                notes: notes || null
             });
             OrderManager.Cart.clear();
+            document.getElementById('checkoutNotes').value = '';
             closeCheckout();
             OrderManager.App.showToast('Pedido #' + order.id + ' criado! Acompanhe em Pedidos.', 'success');
         } catch (err) {

@@ -21,7 +21,7 @@
             </nav>
             <div class="search-bar">
                 <span class="search-icon">🔍</span>
-                <input type="text" id="filterCustomer" placeholder="Buscar por cliente">
+                <input type="text" id="filterSearch" placeholder="Buscar pedido (nº, cliente ou restaurante)">
             </div>
         </div>
     </header>
@@ -49,6 +49,84 @@
                     <option value="">Todos os restaurantes</option>
                 </select>
             </div>
+
+            <section class="panel-section" id="customerPanel">
+                <button type="button" class="panel-toggle" id="customerPanelToggle" aria-expanded="false">
+                    <span>📞 Cadastrar cliente (pedido por telefone)</span>
+                    <span class="panel-toggle-icon">▼</span>
+                </button>
+                <div class="panel-body hidden" id="customerPanelBody">
+                    <form id="customerForm" class="customer-form">
+                        <div class="form-row">
+                            <label for="customerName">Nome *</label>
+                            <input type="text" id="customerName" required placeholder="Nome do cliente">
+                        </div>
+                        <div class="form-row">
+                            <label for="customerPhone">Telefone</label>
+                            <input type="tel" id="customerPhone" placeholder="(11) 99999-0000">
+                        </div>
+
+                        <fieldset class="address-fieldset">
+                            <legend>Endereço</legend>
+                            <div class="address-mode">
+                                <label class="address-mode-option">
+                                    <input type="radio" name="addressMode" value="cep" checked>
+                                    Buscar por CEP
+                                </label>
+                                <label class="address-mode-option">
+                                    <input type="radio" name="addressMode" value="manual">
+                                    Digitar manualmente
+                                </label>
+                            </div>
+
+                            <div id="addressByCep">
+                                <div class="form-row">
+                                    <label for="customerCep">CEP</label>
+                                    <div class="cep-row">
+                                        <input type="text" id="customerCep" placeholder="00000-000" maxlength="9" inputmode="numeric">
+                                        <button type="button" class="btn btn-secondary" id="customerCepSearch">Buscar</button>
+                                    </div>
+                                </div>
+                                <div class="form-grid">
+                                    <div class="form-row form-row-wide">
+                                        <label for="customerStreet">Logradouro</label>
+                                        <input type="text" id="customerStreet" readonly placeholder="Preenchido pelo CEP">
+                                    </div>
+                                    <div class="form-row">
+                                        <label for="customerNumber">Número *</label>
+                                        <input type="text" id="customerNumber" placeholder="123">
+                                    </div>
+                                    <div class="form-row">
+                                        <label for="customerComplement">Complemento</label>
+                                        <input type="text" id="customerComplement" placeholder="Apto, bloco...">
+                                    </div>
+                                    <div class="form-row">
+                                        <label for="customerNeighborhood">Bairro</label>
+                                        <input type="text" id="customerNeighborhood" readonly>
+                                    </div>
+                                    <div class="form-row">
+                                        <label for="customerCity">Cidade</label>
+                                        <input type="text" id="customerCity" readonly>
+                                    </div>
+                                    <div class="form-row">
+                                        <label for="customerState">UF</label>
+                                        <input type="text" id="customerState" readonly maxlength="2">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="addressManual" class="hidden">
+                                <div class="form-row">
+                                    <label for="customerAddress">Endereço completo</label>
+                                    <input type="text" id="customerAddress" placeholder="Rua, número, bairro, cidade">
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <button type="submit" class="btn btn-primary" id="customerSubmit">Cadastrar cliente</button>
+                    </form>
+                </div>
+            </section>
 
             <div class="orders-list" id="ordersList">
                 <div class="loading-overlay">Carregando pedidos...</div>

@@ -31,7 +31,14 @@ OrderManager.App = (function () {
         setTimeout(function () { toast.remove(); }, 4000);
     }
 
+    function normalizeStatus(status) {
+        if (typeof status === 'string') return status;
+        var byNumber = ['Received', 'Preparing', 'OnTheWay', 'Delivered'];
+        return byNumber[status] || String(status);
+    }
+
     function statusLabel(status) {
+        status = normalizeStatus(status);
         var labels = {
             Received: 'Recebido',
             Preparing: 'Em preparo',
@@ -42,6 +49,7 @@ OrderManager.App = (function () {
     }
 
     function statusBadgeClass(status) {
+        status = normalizeStatus(status);
         var map = {
             Received: 'badge-received',
             Preparing: 'badge-preparing',
@@ -52,6 +60,7 @@ OrderManager.App = (function () {
     }
 
     function nextStatusLabel(status) {
+        status = normalizeStatus(status);
         var map = {
             Received: 'Iniciar preparo',
             Preparing: 'Saiu para entrega',
@@ -85,6 +94,7 @@ OrderManager.App = (function () {
         formatBRL: formatBRL,
         formatDate: formatDate,
         showToast: showToast,
+        normalizeStatus: normalizeStatus,
         statusLabel: statusLabel,
         statusBadgeClass: statusBadgeClass,
         nextStatusLabel: nextStatusLabel,

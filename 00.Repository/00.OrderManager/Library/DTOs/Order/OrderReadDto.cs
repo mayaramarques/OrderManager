@@ -12,6 +12,7 @@ namespace Library.DTOs.Order
         public string CustomerName { get; set; } = string.Empty;
         public int RestaurantId { get; set; }
         public string RestaurantName { get; set; } = string.Empty;
+        public string? Notes { get; set; }
         public List<OrderItemReadDto> Items { get; set; } = new();
     }
 }

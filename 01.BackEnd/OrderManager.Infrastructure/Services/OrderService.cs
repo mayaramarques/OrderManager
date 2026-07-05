@@ -101,6 +101,7 @@ namespace OrderManager.Infrastructure.Services
                 RestaurantId = dto.RestaurantId,
                 Status = OrderStatusEnum.Received,
                 CreatedAt = DateTime.UtcNow,
+                Notes = string.IsNullOrWhiteSpace(dto.Notes) ? null : dto.Notes.Trim(),
                 Customer = customer,
                 Restaurant = restaurant
             };
@@ -174,6 +175,7 @@ namespace OrderManager.Infrastructure.Services
                 CustomerName = order.Customer?.Name ?? string.Empty,
                 RestaurantId = order.RestaurantId,
                 RestaurantName = order.Restaurant?.Name ?? string.Empty,
+                Notes = order.Notes,
                 Items = order.Items.Select(i => new OrderItemReadDto
                 {
                     ProductId = i.ProductId,
