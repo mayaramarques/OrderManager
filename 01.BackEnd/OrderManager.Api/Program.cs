@@ -1,6 +1,7 @@
 using Library.Contracts;
 using Microsoft.EntityFrameworkCore;
 using OrderManager.Infrastructure;
+using OrderManager.Infrastructure.Data;
 using OrderManager.Infrastructure.Repositories;
 using OrderManager.Infrastructure.Services;
 
@@ -29,6 +30,10 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<OrderManagerDbContext>();
+    await DbInitializer.SeedAsync(db);
+
     app.MapOpenApi();
     app.UseSwagger();
     app.UseSwaggerUI();
