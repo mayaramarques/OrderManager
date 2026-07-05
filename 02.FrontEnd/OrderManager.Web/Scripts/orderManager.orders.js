@@ -140,13 +140,13 @@ OrderManager.Orders = (function () {
 
         var btn = card.querySelector('.btn-advance');
         if (btn) {
-            btn.addEventListener('click', function () { advanceOrder(order.id, btn); });
+            btn.addEventListener('click', function () { advanceOrder(order.id, order.status, btn); });
         }
 
         return card;
     }
 
-    async function advanceOrder(id, btn) {
+    async function advanceOrder(id, status, btn) {
         btn.disabled = true;
         btn.textContent = 'Atualizando...';
         try {
@@ -157,8 +157,8 @@ OrderManager.Orders = (function () {
             loadOrders();
         } catch (err) {
             OrderManager.App.showToast(err.message, 'error');
-            btn.disabled = false;
-            btn.textContent = OrderManager.App.nextStatusLabel(btn.closest('.order-card').querySelector('.badge').textContent) || 'Avançar';
+            btn.disabled = status === 'Delivered';
+            btn.textContent = OrderManager.App.nextStatusLabel(status) || 'Avançar';
         }
     }
 
