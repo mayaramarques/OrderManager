@@ -2,6 +2,7 @@ using Library.Contracts;
 using Library.DTOs.Order;
 using Library.Entities;
 using Library.Entities.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace OrderManager.Infrastructure.Services
 {
@@ -22,6 +23,63 @@ namespace OrderManager.Infrastructure.Services
             _customerRepository = customerRepository;
             _restaurantRepository = restaurantRepository;
             _productRepository = productRepository;
+        }
+
+        public async Task<PagedResultDto<OrderReadDto>> GetAllAsync(OrderFilterDto filter)
+        {
+            const int maxPageSize = 100;
+            if (filter.Page < 1) filter.Page = 1;
+            if (filter.PageSize < 1) filter.PageSize = 10;
+            if (filter.PageSize > maxPageSize) filter.PageSize = maxPageSize;
+
+            var query = _orderRepository.GetFilteredQuery(filter);
+            var totalCount = await query.CountAsync();
+
+            var orders = await query
+                .Skip((filter.Page - 1) * filter.PageSize)
+                .Take(filter.PageSize)
+                .ToListAsync();
+
+            return new PagedResultDto<OrderReadDto>
+            {
+                Items = orders.Select(MapToReadDto).ToList(),
+                TotalCount = totalCount,
+                Page = filter.Page,
+                PageSize = filter.PageSize,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)filter.PageSize)
+            };
+        }
+
+        public async Task<List<OrderSummaryItemDto>> GetSummaryAsync(string groupBy)
+        {
+            var filter = new OrderFilterDto { Page = 1, PageSize = int.MaxValue };
+            var query = _orderRepository.GetFilteredQuery(filter);
+
+            if (groupBy.Equals("restaurant", StringComparison.OrdinalIgnoreCase))
+            {
+                return await query
+                    .GroupBy(o => new { o.RestaurantId, o.Restaurant!.Name })
+                    .Select(g => new OrderSummaryItemDto
+                    {
+                        Key = g.Key.RestaurantId.ToString(),
+                        Label = g.Key.Name,
+                        Count = g.Count(),
+                        TotalAmount = g.Sum(o => o.Total)
+                    })
+                    .ToListAsync();
+            }
+
+            // default: group by status
+            return await query
+                .GroupBy(o => o.Status)
+                .Select(g => new OrderSummaryItemDto
+                {
+                    Key = g.Key.ToString(),
+                    Label = g.Key.ToString(),
+                    Count = g.Count(),
+                    TotalAmount = g.Sum(o => o.Total)
+                })
+                .ToListAsync();
         }
 
         public async Task<(OrderReadDto? Result, string? Error, int StatusCode)> CreateAsync(OrderCreateDto dto)

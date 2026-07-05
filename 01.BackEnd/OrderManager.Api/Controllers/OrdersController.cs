@@ -1,5 +1,6 @@
 using Library.Contracts;
 using Library.DTOs.Order;
+using Library.Entities.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace OrderManager.Api.Controllers
@@ -13,6 +14,44 @@ namespace OrderManager.Api.Controllers
         public OrdersController(IOrderService service)
         {
             _service = service;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll(
+            [FromQuery] OrderStatusEnum? status,
+            [FromQuery] int? customerId,
+            [FromQuery] int? restaurantId,
+            [FromQuery] DateTime? from,
+            [FromQuery] DateTime? to,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10)
+        {
+            var filter = new OrderFilterDto
+            {
+                Status = status,
+                CustomerId = customerId,
+                RestaurantId = restaurantId,
+                From = from,
+                To = to,
+                Page = page,
+                PageSize = pageSize
+            };
+
+            var result = await _service.GetAllAsync(filter);
+            return Ok(result);
+        }
+
+        [HttpGet("summary")]
+        public async Task<IActionResult> GetSummary([FromQuery] string groupBy = "status")
+        {
+            if (!groupBy.Equals("status", StringComparison.OrdinalIgnoreCase) &&
+                !groupBy.Equals("restaurant", StringComparison.OrdinalIgnoreCase))
+            {
+                return BadRequest(new { message = "groupBy deve ser 'status' ou 'restaurant'." });
+            }
+
+            var summary = await _service.GetSummaryAsync(groupBy);
+            return Ok(summary);
         }
 
         [HttpPost]
