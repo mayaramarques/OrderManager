@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OrderManager — Delivery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../Css/orderManager.tokens.css">
+    <link rel="stylesheet" href="../Css/orderManager.layout.css">
+    <link rel="stylesheet" href="../Css/orderManager.components.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="index.html" class="logo">OrderManager</a>
+            <nav class="nav-links">
+                <a href="index.html" class="active">Início</a>
+                <a href="pedidos.html">Pedidos</a>
+            </nav>
+            <div class="search-bar">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="Busque por item ou loja">
+            </div>
+            <button class="cart-btn" id="cartBtn">
+                <span>🛒</span>
+                <span class="cart-total" id="cartTotal">R$ 0,00</span>
+                <span id="cartCount">0 itens</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <h1 class="hero-title">Pedir delivery no OrderManager é rápido e prático! Conheça as categorias</h1>
+
+            <div class="featured-card" id="featuredRestaurants">
+                <span class="featured-icon">🍔</span>
+                <span class="featured-text">Restaurantes</span>
+            </div>
+
+            <section class="section" id="restaurantsSection">
+                <div class="section-header">
+                    <h2 class="section-title">Destaques</h2>
+                    <a href="#" class="section-link">Ver mais</a>
+                </div>
+                <div class="carousel-wrapper">
+                    <button class="carousel-btn prev" id="carouselPrev" aria-label="Anterior">‹</button>
+                    <div id="restaurantSkeleton" class="carousel">
+                        <div class="skeleton skeleton-card"></div>
+                        <div class="skeleton skeleton-card"></div>
+                        <div class="skeleton skeleton-card"></div>
+                    </div>
+                    <div id="restaurantCarousel" class="carousel hidden"></div>
+                    <button class="carousel-btn next" id="carouselNext" aria-label="Próximo">›</button>
+                </div>
+            </section>
+
+            <section class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Categorias</h2>
+                </div>
+                <div class="category-grid" id="categoryGrid"></div>
+            </section>
+
+            <section class="menu-panel hidden" id="menuPanel">
+                <div class="section-header">
+                    <h2 class="section-title" id="menuTitle">Cardápio</h2>
+                </div>
+                <div id="menuProducts"></div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Checkout modal -->
+    <div class="modal-overlay hidden" id="checkoutOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Finalizar pedido</h2>
+                <button class="modal-close" id="checkoutClose" aria-label="Fechar">&times;</button>
+            </div>
+            <div class="modal-body">
+                <label for="customerSelect">Cliente</label>
+                <select id="customerSelect" class="checkout-select">
+                    <option value="">Selecione o cliente</option>
+                </select>
+                <div id="checkoutItems"></div>
+                <div class="cart-total-row">
+                    <span>Total</span>
+                    <span id="checkoutTotal">R$ 0,00</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="checkoutClose2" onclick="document.getElementById('checkoutOverlay').classList.add('hidden')">Cancelar</button>
+                <button class="btn btn-primary" id="checkoutConfirm">Confirmar pedido</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../Scripts/orderManager.config.js"></script>
+    <script src="../Scripts/orderManager.app.js"></script>
+    <script src="../Scripts/orderManager.api.js"></script>
+    <script src="../Scripts/orderManager.cart.js"></script>
+    <script src="../Scripts/orderManager.home.js"></script>
+</body>
+</html>

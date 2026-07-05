@@ -6,5 +6,7 @@
   <Folder Name="/01.BackEnd/">
     <Project Path="01.BackEnd/OrderManager.Api/OrderManager.Api.csproj" />
     <Project Path="01.BackEnd/OrderManager.Infrastructure/OrderManager.Infrastructure.csproj" />
+    <Project Path="01.BackEnd/OrderManager.Functions/OrderManager.Functions.csproj" />
   </Folder>
+  <Folder Name="/02.FrontEnd/" />
 </Solution>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OrderManager — Gestão de Pedidos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../Css/orderManager.tokens.css">
+    <link rel="stylesheet" href="../Css/orderManager.layout.css">
+    <link rel="stylesheet" href="../Css/orderManager.components.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="index.html" class="logo">OrderManager</a>
+            <nav class="nav-links">
+                <a href="index.html">Início</a>
+                <a href="pedidos.html" class="active">Pedidos</a>
+            </nav>
+            <div class="search-bar">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="filterCustomer" placeholder="Buscar por cliente">
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <h1 class="hero-title">Gestão de pedidos</h1>
+
+            <div class="summary-grid" id="summaryGrid">
+                <div class="skeleton" style="height:80px"></div>
+                <div class="skeleton" style="height:80px"></div>
+                <div class="skeleton" style="height:80px"></div>
+                <div class="skeleton" style="height:80px"></div>
+            </div>
+
+            <div class="filters-bar">
+                <select id="filterStatus">
+                    <option value="">Todos os status</option>
+                    <option value="Received">Recebido</option>
+                    <option value="Preparing">Em preparo</option>
+                    <option value="OnTheWay">A caminho</option>
+                    <option value="Delivered">Entregue</option>
+                </select>
+                <select id="filterRestaurant">
+                    <option value="">Todos os restaurantes</option>
+                </select>
+            </div>
+
+            <div class="orders-list" id="ordersList">
+                <div class="loading-overlay">Carregando pedidos...</div>
+            </div>
+
+            <div style="text-align:center;margin-top:1.5rem">
+                <button class="btn btn-secondary hidden" id="loadMoreBtn">Carregar mais</button>
+            </div>
+        </div>
+    </main>
+
+    <script src="../Scripts/orderManager.config.js"></script>
+    <script src="../Scripts/orderManager.app.js"></script>
+    <script src="../Scripts/orderManager.api.js"></script>
+    <script src="../Scripts/orderManager.orders.js"></script>
+</body>
+</html>
